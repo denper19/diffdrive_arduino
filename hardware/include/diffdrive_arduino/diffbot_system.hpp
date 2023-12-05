@@ -18,6 +18,7 @@
 #include <memory>
 #include <string>
 #include <vector>
+#include <cstring>
 
 #include "hardware_interface/handle.hpp"
 #include "hardware_interface/hardware_info.hpp"
@@ -34,8 +35,18 @@
 #include "diffdrive_arduino/arduino_comms.hpp"
 #include "diffdrive_arduino/wheel.hpp"
 
+
 namespace diffdrive_arduino
 {
+
+struct Quaternion
+{
+  double x;
+  double y;
+  double z;
+  double w;
+};
+
 class DiffDriveArduinoHardware : public hardware_interface::SystemInterface
 {
 
@@ -93,12 +104,19 @@ public:
   hardware_interface::return_type write(
     const rclcpp::Time & time, const rclcpp::Duration & period) override;
 
+  DIFFDRIVE_ARDUINO_PUBLIC
+  void euler_to_quat();
+
 private:
 
   ArduinoComms comms_;
   Config cfg_;
   Wheel wheel_l_;
   Wheel wheel_r_;
+  double roll, pitch, yaw;
+  double ax, ay, az;
+  double gx, gy, gz;
+  Quaternion q;
 };
 
 }  // namespace diffdrive_arduino
