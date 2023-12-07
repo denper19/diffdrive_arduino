@@ -57,6 +57,7 @@ public:
     serial_conn_.FlushIOBuffers(); // Just in case
     serial_conn_.Write("i\r");
     uint8_t imu_data[21];
+    int status = 0;
     try
     {
       for(int i = 0; i < 21; i++)
@@ -71,6 +72,7 @@ public:
       *gx = (int16_t&)imu_data[14];
       *gy = (int16_t&)imu_data[16];
       *gz = (int16_t&)imu_data[18];
+      status = 1;
     }
     catch(const LibSerial::ReadTimeout&)
     {
@@ -84,8 +86,9 @@ public:
       *gx = 0;
       *gy = 0;
       *gz = 0;
+      status = -1;
     }
-    return -1;
+    return status;
   }
 
   std::string send_msg(const std::string &msg_to_send, bool print_output = false)
